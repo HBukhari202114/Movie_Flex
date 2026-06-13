@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="x-icon" href="./images/movie logo.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flix - Admin Dashboard</title>
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- BOX ICONS -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    
+    <style>
+        :root {
+            --main-color: #1f83ed;
+            --body-bg: #181616;
+            --box-bg: #221f1f;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --success-color: #2ec4b6;
+            --danger-color: #e63946;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --glass-bg: rgba(34, 31, 31, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Cairo", sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--body-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--main-color);
+        }
+
+        /* Login Container */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--body-bg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            animation: cardLoad 0.5s ease;
+        }
+
+        @keyframes cardLoad {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card .logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .login-card .logo span {
+            color: var(--main-color);
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .input-control:focus {
+            border-color: var(--main-color);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 10px rgba(31, 131, 237, 0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--main-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .login-error {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* Navigation Header */
+        .nav-wrapper {
+            background-color: #000;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .nav-logo span {
+            color: var(--main-color);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-outline {
+            padding: 0.5rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: var(--transition);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-color);
+        }
+
+        .btn-logout {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .btn-logout:hover {
+            background-color: rgba(230, 57, 70, 0.1);
+            border-color: var(--danger-color);
+        }
+
+        /* Main Content wrapper */
+        .main-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        /* Statistics Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-info h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--text-color);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--main-color);
+            background: rgba(31, 131, 237, 0.1);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Two Column Panel Grid */
+        .panel-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .panel-grid {
+                grid-template-columns: 420px 1fr;
+            }
+        }
+
+        /* Form Card */
+        .panel-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            height: fit-content;
+        }
+
+        .panel-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--main-color);
+            padding-left: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title small {
+            font-size: 0.8rem;
+            color: var(--main-color);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* File Upload Styling */
+        .upload-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.02);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--main-color);
+            background: rgba(31, 131, 237, 0.05);
+        }
+
+        .upload-zone i {
+            font-size: 2rem;
+            color: var(--main-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-zone p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .preview-container {
+            display: none;
+            margin-top: 10px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            max-height: 150px;
+        }
+
+        .preview-container img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .remove-preview {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.8);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .remove-preview:hover {
+            background: var(--danger-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .textarea-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Catalog Card and Table */
+        .catalog-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .catalog-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .catalog-header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .filter-tab.active, .filter-tab:hover {
+            background: var(--main-color);
+            color: white;
+            border-color: var(--main-color);
+        }
+
+        /* Movie List Grid */
+        .movie-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .movie-list-table th, .movie-list-table td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .movie-list-table th {
+            background-color: rgba(255, 255, 255, 0.02);
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .movie-list-table tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: var(--transition);
+        }
+
+        .movie-list-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .td-movie {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .td-movie img {
+            width: 45px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .movie-title-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 3px;
+        }
+
+        .movie-title-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-type {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--text-color);
+        }
+
+        .badge-category {
+            background-color: rgba(31, 131, 237, 0.15);
+            color: var(--main-color);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            height: 60px;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-edit:hover {
+            background-color: var(--main-color);
+            border-color: var(--main-color);
+        }
+
+        .btn-delete {
+            background-color: rgba(230, 57, 70, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(230, 57, 70, 0.2);
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+
+        .empty-row {
+            text-align: center !important;
+            padding: 3rem !important;
+            color: var(--text-muted);
+        }
+
+        /* Toast System */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--box-bg);
+            border-left: 4px solid var(--main-color);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            animation: slideIn 0.3s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-color: var(--success-color); }
+        .toast.error { border-color: var(--danger-color); }
+
+        .toast i {
+            font-size: 1.3rem;
+        }
+        .toast.success i { color: var(--success-color); }
+        .toast.error i { color: var(--danger-color); }
+
+        .toast-content p {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN PANEL OVERLAY -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="logo">
+                <i class='bx bx-movie-play bx-tada main-color'></i>Fl<span>i</span>x Admin
+            </div>
+            <p>Access the central portal to manage download links, images, and movie elements.</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="password">Enter Admin Password</label>
+                    <input type="password" id="password" class="input-control" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="bx bx-log-in-circle"></i> Authenticate
+                </button>
+                <div class="login-error" id="login-error-msg">Incorrect password. Please try again.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NAVIGATION HEADER -->
+    <div class="nav-wrapper">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <i class='bx bx-movie-play bx-tada main-color'></i>Fl<span>i</span>x Admin
+            </a>
+            <div class="nav-actions">
+                <a href="/" class="btn-outline">
+                    <i class="bx bx-home-alt"></i> View Website
+                </a>
+                <button class="btn-outline btn-logout" id="logout-btn">
+                    <i class="bx bx-log-out-circle"></i> Log Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <div class="main-wrapper">
+        
+        <!-- STATISTICS GRID -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Total Titles</h3>
+                    <p id="stat-total">0</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="bx bx-collection"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Movies</h3>
+                    <p id="stat-movies">0</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="bx bx-film"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Series</h3>
+                    <p id="stat-series">0</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="bx bx-tv"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Cartoons</h3>
+                    <p id="stat-cartoons">0</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="bx bx-smile"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- TWO COLUMN CRUD PANEL -->
+        <div class="panel-grid">
+            
+            <!-- LEFT PANEL: MOVIE CREATOR/EDITOR -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <span id="form-panel-title">Add New Movie</span>
+                    <small id="form-cancel-btn" style="display: none;">Cancel Edit</small>
+                </div>
+                
+                <form id="movie-form">
+                    <input type="hidden" id="movie-id">
+                    
+                    <div class="form-group">
+                        <label for="title">Movie Title</label>
+                        <input type="text" id="title" class="input-control" placeholder="e.g. Inception" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">Type</label>
+                            <select id="type" class="input-control" style="background-color: var(--box-bg);">
+                                <option value="movie">Movie</option>
+                                <option value="series">Series</option>
+                                <option value="cartoon">Cartoon</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Homepage Location</label>
+                            <select id="category" class="input-control" style="background-color: var(--box-bg);">
+                                <option value="latest">Latest Feed</option>
+                                <option value="top">Top Slider</option>
+                                <option value="hero">Hero Slider (Banner)</option>
+                                <option value="special">Special Highlight Banner</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rating">Rating (e.g. 9.5)</label>
+                            <input type="text" id="rating" class="input-control" placeholder="9.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duration / Season info</label>
+                            <input type="text" id="duration" class="input-control" placeholder="120 mins" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quality">Quality Code</label>
+                            <input type="text" id="quality" class="input-control" placeholder="HD / 4K" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age Rating</label>
+                            <input type="text" id="age" class="input-control" placeholder="16+" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="downloadLink">Download Link (User Redirection Link)</label>
+                        <input type="url" id="downloadLink" class="input-control" placeholder="https://external-download-link.com" required>
+                    </div>
+
+                    <!-- IMAGE UPLOADING WIDGET -->
+                    <div class="form-group">
+                        <label>Movie Cover Image (File Upload or URL)</label>
+                        <div class="upload-zone" id="drop-zone">
+                            <i class="bx bx-cloud-upload"></i>
+                            <p>Drag & Drop cover file, or click to browse</p>
+                            <input type="file" id="imageFile" accept="image/*">
+                        </div>
+                        
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.8rem;">— OR ENTER REMOTE IMAGE URL —</div>
+                        <input type="text" id="imageUrl" class="input-control" placeholder="https://image-host.com/cover.jpg">
+                        
+                        <!-- Preview container -->
+                        <div class="preview-container" id="image-preview-wrapper">
+                            <img id="image-preview" src="" alt="Live Preview">
+                            <button type="button" class="remove-preview" id="clear-image-btn"><i class="bx bx-x"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="description">Short Description / Synopsis</label>
+                        <textarea id="description" class="input-control textarea-control" placeholder="Enter movie description..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="margin-top: 1.5rem;" id="submit-form-btn">
+                        <i class="bx bx-save"></i> Save Movie
+                    </button>
+                </form>
+            </div>
+
+            <!-- RIGHT PANEL: SEARCHABLE CATALOG -->
+            <div class="catalog-container">
+                <div class="catalog-header">
+                    <div class="search-box">
+                        <i class="bx bx-search"></i>
+                        <input type="text" id="catalog-search" class="input-control" placeholder="Search movies by title...">
+                    </div>
+                    
+                    <div class="filter-tabs">
+                        <div class="filter-tab active" data-filter="all">All Items</div>
+                        <div class="filter-tab" data-filter="movie">Movies</div>
+                        <div class="filter-tab" data-filter="series">Series</div>
+                        <div class="filter-tab" data-filter="cartoon">Cartoons</div>
+                    </div>
+                </div>
+
+                <!-- TABLE DISPLAY -->
+                <table class="movie-list-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Movie details</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th style="text-align: right; width: 100px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movie-catalog-tbody">
+                        <!-- Rows rendered dynamically in Javascript -->
+                        <tr>
+                            <td colspan="4" class="empty-row"><i class="bx bx-loader bx-spin" style="font-size: 1.5rem; vertical-align: middle; margin-right: 8px;"></i> Loading movie catalog...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TOAST ALERT WRAPPER -->
+    <div id="toast-container"></div>
+
+    <!-- JQUERY & ACTIONS CODE -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            let moviesDatabase = [];
+            let currentFilter = 'all';
+            let editMode = false;
+            let uploadedFileBlob = null;
+
+            // Auth verification
+            const verifyToken = async () => {
+                const token = localStorage.getItem('flix_admin_token');
+                if (!token) {
+                    showLogin();
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/auth/validate', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        hideLogin();
+                        loadCatalog();
+                    } else {
+                        showLogin();
+                    }
+                } catch (err) {
+                    showLogin();
+                }
+            };
+
+            const showLogin = () => {
+                $('#login-overlay').css('display', 'flex');
+                $('body').css('overflow', 'hidden');
+            };
+
+            const hideLogin = () => {
+                $('#login-overlay').fadeOut();
+                $('body').css('overflow', 'auto');
+            };
+
+            // Login Trigger
+            $('#login-form').submit(async (e) => {
+                e.preventDefault();
+                const password = $('#password').val();
+                
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        localStorage.setItem('flix_admin_token', data.token);
+                        hideLogin();
+                        showToast('Authenticated successfully!', 'success');
+                        loadCatalog();
+                    } else {
+                        $('#login-error-msg').fadeIn();
+                        setTimeout(() => $('#login-error-msg').fadeOut(), 3000);
+                    }
+                } catch (err) {
+                    $('#login-error-msg').text('Server communication error.').fadeIn();
+                    setTimeout(() => $('#login-error-msg').fadeOut(), 3000);
+                }
+            });
+
+            // Logout Trigger
+            $('#logout-btn').click(() => {
+                localStorage.removeItem('flix_admin_token');
+                moviesDatabase = [];
+                renderCatalog();
+                showLogin();
+                showToast('Logged out successfully.', 'info');
+            });
+
+            // Toast Alert utility
+            const showToast = (message, type = 'success') => {
+                const icon = type === 'success' ? 'bx-check-circle' : (type === 'error' ? 'bx-error-circle' : 'bx-info-circle');
+                const toastId = 'toast-' + Date.now();
+                const toastHtml = `
+                    <div class="toast ${type}" id="${toastId}">
+                        <i class="bx ${icon}"></i>
+                        <div class="toast-content">
+                            <p>${message}</p>
+                        </div>
+                    </div>
+                `;
+                
+                $('#toast-container').append(toastHtml);
+                setTimeout(() => {
+                    $(`#${toastId}`).fadeOut(300, function() { $(this).remove(); });
+                }, 3000);
+            };
+
+            // Load all movies from API
+            const loadCatalog = async () => {
+                try {
+                    const response = await fetch('/api/movies');
+                    if (response.ok) {
+                        moviesDatabase = await response.json();
+                        renderCatalog();
+                        updateStats();
+                    } else {
+                        showToast('Failed to fetch movies from database.', 'error');
+                    }
+                } catch (err) {
+                    showToast('Connection to server failed.', 'error');
+                }
+            };
+
+            // Calculate & display stats
+            const updateStats = () => {
+                $('#stat-total').text(moviesDatabase.length);
+                $('#stat-movies').text(moviesDatabase.filter(m => m.type === 'movie').length);
+                $('#stat-series').text(moviesDatabase.filter(m => m.type === 'series').length);
+                $('#stat-cartoons').text(moviesDatabase.filter(m => m.type === 'cartoon').length);
+            };
+
+            // Render catalog list
+            const renderCatalog = () => {
+                const searchQuery = $('#catalog-search').val().toLowerCase();
+                const tbody = $('#movie-catalog-tbody');
+                tbody.empty();
+
+                const filtered = moviesDatabase.filter(m => {
+                    const matchType = currentFilter === 'all' || m.type === currentFilter;
+                    const matchSearch = m.title.toLowerCase().includes(searchQuery);
+                    return matchType && matchSearch;
+                });
+
+                if (filtered.length === 0) {
+                    tbody.append('<tr><td colspan="4" class="empty-row">No movie elements match the search filter.</td></tr>');
+                    return;
+                }
+
+                // Render latest added first (reverse order if id is timestamp)
+                const sorted = [...filtered].sort((a, b) => b.id.localeCompare(a.id));
+
+                sorted.forEach(movie => {
+                    // Check image path. If not remote http or ./, prepend slash
+                    const imageUrl = (movie.image && (movie.image.startsWith('http') || movie.image.startsWith('./') || movie.image.startsWith('/'))) 
+                        ? movie.image 
+                        : '/' + movie.image;
+
+                    const row = `
+                        <tr>
+                            <td>
+                                <div class="td-movie">
+                                    <img src="${imageUrl}" alt="${movie.title}" onerror="this.src='./images/movies/captain-marvel.png'">
+                                    <div class="movie-title-info">
+                                        <h4>${movie.title}</h4>
+                                        <p>
+                                            <i class="bx bxs-star" style="color:var(--main-color);"></i> ${movie.rating} | 
+                                            <i class="bx bxs-time"></i> ${movie.duration} | 
+                                            <span>${movie.quality}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge badge-type">${movie.type}</span></td>
+                            <td><span class="badge badge-category">${movie.category}</span></td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-icon btn-edit" data-id="${movie.id}" title="Edit details"><i class="bx bx-edit-alt"></i></button>
+                                    <button class="btn-icon btn-delete" data-id="${movie.id}" title="Delete movie"><i class="bx bx-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+            };
+
+            // Filter Tabs
+            $('.filter-tab').click(function() {
+                $('.filter-tab').removeClass('active');
+                $(this).addClass('active');
+                currentFilter = $(this).attr('data-filter');
+                renderCatalog();
+            });
+
+            // Live Search
+            $('#catalog-search').on('input', renderCatalog);
+
+            // Cover Image Drag & Drop / Preview setup
+            const handleImagePreview = (file) => {
+                if (file) {
+                    uploadedFileBlob = file;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        $('#image-preview').attr('src', e.target.result);
+                        $('#image-preview-wrapper').fadeIn();
+                        $('#imageUrl').val('').prop('disabled', true); // disable URL if file uploaded
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            // Image URL field handler
+            $('#imageUrl').on('input', function() {
+                const url = $(this).val().trim();
+                if (url) {
+                    $('#image-preview').attr('src', url);
+                    $('#image-preview-wrapper').fadeIn();
+                    $('#imageFile').val(''); // clear file input
+                    uploadedFileBlob = null;
+                } else {
+                    $('#image-preview-wrapper').fadeOut();
+                }
+            });
+
+            // File select action
+            $('#imageFile').change(function() {
+                if (this.files && this.files[0]) {
+                    handleImagePreview(this.files[0]);
+                }
+            });
+
+            // Drag and drop events
+            $('#drop-zone').on('dragover', function(e) {
+                e.preventDefault();
+                $(this).addClass('dragover');
+            }).on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+            }).on('drop', function(e) {
+                e.preventDefault();
+                $(this).removeClass('dragover');
+                const files = e.originalEvent.dataTransfer.files;
+                if (files && files[0] && files[0].type.startsWith('image/')) {
+                    handleImagePreview(files[0]);
+                }
+            });
+
+            // Clear Preview
+            $('#clear-image-btn').click(() => {
+                $('#image-preview-wrapper').fadeOut();
+                $('#image-preview').attr('src', '');
+                $('#imageFile').val('');
+                $('#imageUrl').val('').prop('disabled', false);
+                uploadedFileBlob = null;
+            });
+
+            // Edit Movie Trigger
+            $(document).on('click', '.btn-edit', function() {
+                const id = $(this).attr('data-id');
+                const movie = moviesDatabase.find(m => m.id === id);
+                if (!movie) return;
+
+                // Load to form
+                editMode = true;
+                $('#movie-id').val(movie.id);
+                $('#title').val(movie.title);
+                $('#type').val(movie.type);
+                $('#category').val(movie.category);
+                $('#rating').val(movie.rating);
+                $('#duration').val(movie.duration);
+                $('#quality').val(movie.quality);
+                $('#age').val(movie.age);
+                $('#downloadLink').val(movie.downloadLink);
+                $('#description').val(movie.description);
+
+                // Load cover preview
+                $('#image-preview-wrapper').hide();
+                uploadedFileBlob = null;
+                $('#imageFile').val('');
+
+                if (movie.image && movie.image.startsWith('/images/uploads/')) {
+                    const cleanPath = (movie.image.startsWith('/')) ? movie.image : '/' + movie.image;
+                    $('#image-preview').attr('src', cleanPath);
+                    $('#image-preview-wrapper').fadeIn();
+                    $('#imageUrl').val('').prop('disabled', true);
+                } else if (movie.image) {
+                    $('#imageUrl').val(movie.image).prop('disabled', false);
+                    $('#image-preview').attr('src', movie.image);
+                    $('#image-preview-wrapper').fadeIn();
+                } else {
+                    $('#imageUrl').val('').prop('disabled', false);
+                }
+
+                // UI adjustments
+                $('#form-panel-title').text('Edit Movie Mode');
+                $('#form-cancel-btn').fadeIn();
+                $('#submit-form-btn').html("<i class='bx bx-edit-alt'></i> Update Movie");
+                
+                // Scroll to form on mobile
+                $('html, body').animate({
+                    scrollTop: $(".panel-card").offset().top - 80
+                }, 500);
+            });
+
+            // Cancel Edit Action
+            const cancelEdit = () => {
+                editMode = false;
+                $('#movie-form')[0].reset();
+                $('#movie-id').val('');
+                $('#image-preview-wrapper').fadeOut();
+                $('#image-preview').attr('src', '');
+                $('#imageUrl').prop('disabled', false);
+                uploadedFileBlob = null;
+
+                $('#form-panel-title').text('Add New Movie');
+                $('#form-cancel-btn').fadeOut();
+                $('#submit-form-btn').html("<i class='bx bx-save'></i> Save Movie");
+            };
+
+            $('#form-cancel-btn').click(cancelEdit);
+
+            // Movie Form Submission (Create or Update)
+            $('#movie-form').submit(async function(e) {
+                e.preventDefault();
+                
+                const id = $('#movie-id').val();
+                const token = localStorage.getItem('flix_admin_token');
+                
+                // Construct Form Data object to send file & data together
+                const formData = new FormData();
+                formData.append('title', $('#title').val().trim());
+                formData.append('type', $('#type').val());
+                formData.append('category', $('#category').val());
+                formData.append('rating', $('#rating').val().trim());
+                formData.append('duration', $('#duration').val().trim());
+                formData.append('quality', $('#quality').val().trim());
+                formData.append('age', $('#age').val().trim());
+                formData.append('downloadLink', $('#downloadLink').val().trim());
+                formData.append('description', $('#description').val().trim());
+
+                if (uploadedFileBlob) {
+                    formData.append('imageFile', uploadedFileBlob);
+                } else {
+                    formData.append('imageUrl', $('#imageUrl').val().trim());
+                }
+
+                const url = editMode ? `/api/movies/${id}` : '/api/movies';
+                const method = editMode ? 'PUT' : 'POST';
+
+                try {
+                    $('#submit-form-btn').prop('disabled', true).html("<i class='bx bx-loader bx-spin'></i> Processing...");
+                    
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast(editMode ? 'Movie details updated!' : 'New movie added successfully!', 'success');
+                        cancelEdit();
+                        loadCatalog();
+                    } else {
+                        showToast(data.message || 'Operation failed.', 'error');
+                    }
+                } catch (err) {
+                    showToast('Network error during operation.', 'error');
+                } finally {
+                    $('#submit-form-btn').prop('disabled', false);
+                }
+            });
+
+            // Delete Movie Action
+            $(document).on('click', '.btn-delete', async function() {
+                const id = $(this).attr('data-id');
+                const movie = moviesDatabase.find(m => m.id === id);
+                if (!movie) return;
+
+                if (confirm(`Are you absolutely sure you want to delete "${movie.title}"? This will clean up its files.`)) {
+                    const token = localStorage.getItem('flix_admin_token');
+                    
+                    try {
+                        const response = await fetch(`/api/movies/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            showToast('Movie deleted and storage cleaned.', 'success');
+                            if (editMode && $('#movie-id').val() === id) {
+                                cancelEdit();
+                            }
+                            loadCatalog();
+                        } else {
+                            showToast(data.message || 'Deletion failed.', 'error');
+                        }
+                    } catch (err) {
+                        showToast('Server connection error.', 'error');
+                    }
+                }
+            });
+
+            // Start up checking
+            verifyToken();
+        });
+    </script>
+</body>
+</html>
