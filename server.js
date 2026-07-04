@@ -6,14 +6,29 @@ const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const DB_FILE = path.join(__dirname, 'movies.json');
-const UPLOAD_DIR = path.join(__dirname, 'images', 'uploads');
+
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+const DB_FILE = path.join(DATA_DIR, 'movies.json');
+const UPLOAD_DIR = path.join(DATA_DIR, 'images', 'uploads');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const AUTH_TOKEN = 'flix-admin-token-secure-123'; // Simple token for local validation
 
 // Ensure upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+// Copy default database to persistent storage if it doesn't exist yet
+if (DATA_DIR !== __dirname && !fs.existsSync(DB_FILE)) {
+    const srcDb = path.join(__dirname, 'movies.json');
+    if (fs.existsSync(srcDb)) {
+        try {
+            fs.copyFileSync(srcDb, DB_FILE);
+            console.log('Successfully seeded default movies database to persistent storage.');
+        } catch (err) {
+            console.error('Failed to seed movies database:', err);
+        }
+    }
 }
 
 // Middlewares
@@ -23,6 +38,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static frontend files and static images
 app.use(express.static(__dirname));
+// Explicitly serve uploads folder (handles persistent volumes outside project root)
+app.use('/images/uploads', express.static(UPLOAD_DIR));
 
 // Multer Storage Configuration for Movie Cover Images
 const storage = multer.diskStorage({
